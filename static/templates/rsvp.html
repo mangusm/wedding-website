@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Mangus Wedding</title>
+  <link rel="stylesheet" type="text/css" href="/css/shared.css" />
+  <script src="/assets/htmx.min.js"></script>
+  <script src="/assets/response-targets.js"></script>
+</head>
+
+<body>
+  <div hx-ext="response-targets" class="full-screen" id="rsvp-background">
+    <h1 class="rsvp-title">RSVP</h1>
+    <div class="rsvp-step" >
+      <div class="center-items">
+        <div id="replaceme" class="rsvp-form">
+          <h2 class="rsvp-prompt">Enter your last name</h2>
+          <input
+            class="rsvp-input"
+            placeholder="Smith"
+            name="lastName"
+            hx-post="/rsvp/findByLastName"
+            hx-trigger="input changed delay:500ms"
+            hx-target="#replaceme"
+            hx-target-300="#next"
+            hx-target-404=".error-message"
+            hx-swap="outerHTML"
+          />
+          {{template "ErrorMessage"}}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

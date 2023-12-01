@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Mangus Wedding</title>
+  <link rel="stylesheet" type="text/css" href="/css/shared.css" />
+  <script src="/assets/htmx.min.js"></script>
+  <script src="/assets/response-targets.js"></script>
+</head>
+<body>
+  <div class="full-screen" id="home-page">
+    <!-- <img src="/assets/bg.jpg" class="image-fill" /> -->
+    <div class="navbar">
+      <div
+        class="navbar-item first"
+        id="travel"
+        hx-get="/travel"
+        hx-push-url="true"
+        hx-target="#home-page"
+        hx-swap="outerHTML"
+      >
+        Travel
+      </div>
+      <div></div>
+      <div
+        class="navbar-item"
+        hx-get="/rsvp"
+        hx-push-url="true"
+        hx-target="#home-page"
+        hx-swap="outerHTML"
+      >
+        RSVP
+      </div>
+      <div></div>
+      <div
+        class="navbar-item last"
+        id="registry"
+        hx-get="/registry"
+        hx-push-url="true"
+        hx-target="#home-page"
+        hx-swap="outerHTML"
+      >
+        Registry
+      </div>
+    </div>
+  </div>
+</body>

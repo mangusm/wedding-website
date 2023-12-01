@@ -1,0 +1,4 @@
+.env
+tmp
+deploy.sh
+*.jpg

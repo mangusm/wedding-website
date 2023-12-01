@@ -1,0 +1,23 @@
+<form hx-target="this" class="rsvp-form">
+  <h2 class="rsvp-prompt">
+    Looks like we've sent out multiple invitations to people with that last
+    name. Which one is you?
+  </h2>
+  {{range $i, $guest := .Guests}}
+  <div id="guest-{{$i}}" class="guest">
+    <input
+      class="rsvp-radio"
+      type="radio"
+      name="guestId"
+      value="{{$guest.Id.String}}"
+      id="radio-{{$i}}"
+      hx-post="/rsvp/findById"
+      hx-trigger="change"
+      hx-swap="outerHTML swap:500ms"
+    />
+    <label class="guest-name" for="radio-{{$i}}"
+      >{{$guest.FirstName.String}}</label
+    >
+  </div>
+  {{end}}
+</form>

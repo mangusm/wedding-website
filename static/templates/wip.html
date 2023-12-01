@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Whoops!</title>
+  <link rel="stylesheet" type="text/css" href="/css/shared.css" />
+  <script src="/assets/htmx.min.js"></script>
+</head>
+<body>
+  <div class="full-screen center-items center-text" id="wip">
+    <h1>¯\_(ツ)_/¯</h1>
+    <h2>Sorry, this page isn't ready yet.</h2>
+    <h3
+      class="clickable-text"
+      hx-get="/"
+      hx-push-url="true"
+      hx-target="#wip"
+      hx-swap="outerHTML"
+    >
+      Go back
+    </h3>
+  </div>
+</body>

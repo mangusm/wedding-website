@@ -1,0 +1,61 @@
+<form 
+  class="rsvp-form" 
+  hx-post="/rsvp/submit" 
+  hx-target="this"
+  hx-target-400=".error-message"
+  hx-target-500=".error-message"
+  hx-swap="outerHTML"
+>
+  <h2 class="rsvp-prompt">
+  {{if (index .Guests 0).HasRsvpd.Bool}}
+    We already have your RSVP. If you need to change something, get in touch
+    with us directly.
+  {{else}}
+    Please select who will be attending
+  {{end}}
+  </h2>
+  {{range $i, $guest := .Guests}}
+  <input type="hidden" name="guestIds" value="{{$guest.Id.String}}"/>
+  <div id="guest-{{$i}}" class="guest">
+    <input
+      class="rsvp-checkbox"
+      type="checkbox"
+      name="guestsAttending"
+      value="{{$guest.Id.String}}"
+      id="checkbox-{{$i}}"
+      {{if $guest.Attending.Bool}} checked {{end}}
+      {{if $guest.HasRsvpd.Bool}} disabled {{end}}
+    />
+    <label for="checkbox-{{$i}}" class="guest-name"
+      >{{ $guest.FirstName.String }}</label
+    >
+  </div>
+  {{if $guest.PlusOneAllowed.Bool}}
+  <div class="guest">
+    <label for="plus-one-{{$i}}" class="guest-name"
+      >Plus one</label
+    >
+    <input
+      class="rsvp-checkbox"
+      type="checkbox"
+      {{if $guest.PlusOneAttending.Bool}} checked {{end}}
+      {{if $guest.HasRsvpd.Bool}} disabled {{end}}
+      value="{{$guest.Id.String}}"
+      name="plusOnesAttending"
+      id="plus-one-{{$i}}"
+    />
+  </div>
+  {{end}}
+  {{end}}
+  <h2 class="rsvp-prompt">
+    Does anyone attending have any dietary restrictions or need special
+    accomadations?
+  </h2>
+  <textarea
+    {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
+    name="notes"
+    placeholder="I happen to be a vegetarian."
+  >{{(index .Guests 0).Notes.String}}</textarea>
+  {{template "ErrorMessage"}}
+  <button class="submit-button" type="submit">Submit</button>
+</form>
