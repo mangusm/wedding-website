@@ -1,4 +1,4 @@
-<div class="full-screen center-items center-text" id="wip">
+<div class="center-items center-text" id="wip">
   <h2>
     {{ if .Guest }} Thank you for your RSVP! We can't wait to see you{{ else}}
     We're sorry you can't make it.{{ end }}{{ if and (.Guest) (eq .Guest
@@ -10,7 +10,7 @@
     class="clickable-text"
     hx-get="/"
     hx-push-url="true"
-    hx-target="#rsvp-background"
+    hx-target="#rsvp-page"
     hx-swap="outerHTML"
   >
     Go back

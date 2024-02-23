@@ -26,24 +26,42 @@
       {{if $guest.Attending.Bool}} checked {{end}}
       {{if $guest.HasRsvpd.Bool}} disabled {{end}}
     />
-    <label for="checkbox-{{$i}}" class="guest-name"
-      >{{ $guest.FirstName.String }}</label
-    >
+    <label for="checkbox-{{$i}}" class="guest-name-container">
+      <div class="guest-name">{{ $guest.FirstName.String }}</div>
+      <div class="rsvp-status">{{if $guest.HasRsvpd.Bool}}
+          -
+          {{if $guest.PlusOneAttending.Bool}}
+          attending
+          {{else}}
+          not attending
+          {{end}}
+        {{end}}
+      </div>
+    </label>
   </div>
   {{if $guest.PlusOneAllowed.Bool}}
   <div class="guest">
-    <label for="plus-one-{{$i}}" class="guest-name"
-      >Plus one</label
-    >
     <input
-      class="rsvp-checkbox"
-      type="checkbox"
-      {{if $guest.PlusOneAttending.Bool}} checked {{end}}
-      {{if $guest.HasRsvpd.Bool}} disabled {{end}}
-      value="{{$guest.Id.String}}"
-      name="plusOnesAttending"
-      id="plus-one-{{$i}}"
+    class="rsvp-checkbox"
+    type="checkbox"
+    {{if $guest.PlusOneAttending.Bool}} checked {{end}}
+    {{if $guest.HasRsvpd.Bool}} disabled {{end}}
+    value="{{$guest.Id.String}}"
+    name="plusOnesAttending"
+    id="plus-one-{{$i}}"
     />
+    <label for="plus-one-{{$i}}" class="guest-name-container">
+      <div class="guest-name">Plus one</div>
+      <div class="rsvp-status">{{if $guest.HasRsvpd.Bool}}
+          -
+          {{if $guest.PlusOneAttending.Bool}}
+          yes
+          {{else}}
+          no
+          {{end}}
+        {{end}}
+      </div>
+    </label>
   </div>
   {{end}}
   {{end}}
@@ -57,5 +75,7 @@
     placeholder="I happen to be a vegetarian."
   >{{(index .Guests 0).Notes.String}}</textarea>
   {{template "ErrorMessage"}}
-  <button class="submit-button" type="submit">Submit</button>
+  {{if not (index .Guests 0).HasRsvpd.Bool}}
+    <button class="submit-button" type="submit">Submit</button>
+  {{end}}
 </form>

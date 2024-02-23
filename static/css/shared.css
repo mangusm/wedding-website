@@ -101,6 +101,7 @@ h3 {
   position: sticky;
   top: 0px;
   height: 15vh;
+  min-height: 1em;
   text-align: center;
 }
 
@@ -153,11 +154,32 @@ h3 {
 }
 
 .guest-name {
-  width: 100%;
+  flex: 0 5 100%;
   border-radius: 0.25em;
   font-size: 5em;
   padding: 0.25em;
   background-color: transparent;
+}
+
+.guest:has(input:not(:disabled)) > * {
+  cursor: pointer;
+}
+
+.rsvp-status {
+  flex: 0 2 100%;
+  font-size: 5em;
+  padding: 0.25em 0.25em 0.25em 0;
+  background-color: transparent;
+}
+
+.guest-name-container {
+  display: flex;
+  width: 100%;
+  background-color: transparent;
+}
+
+.guest:has(input:disabled) > * {
+  cursor: not-allowed;
 }
 
 .rsvp-radio {
@@ -168,7 +190,7 @@ h3 {
   display: none;
 }
 
-input[name="attending"]:not(:checked) {
+input[name='attending']:not(:checked) {
   display: none;
 }
 
@@ -181,18 +203,27 @@ input[name="attending"]:not(:checked) {
   background-color: white;
 }
 
-/* Don't display the plus one checkbox neither it nor the guest checkbox are checked*/
-.guest:has(input[name="guestsAttending"]:not(:checked)) + div:has(input[name="plusOnesAttending"]:not(:checked)) {
+/* Don't display the plus one if neither the guest has not been selected*/
+.guest:has(input[name='guestsAttending']:not(:checked))
+  + div:has(input[name='plusOnesAttending']:not(:checked)) {
   display: none;
 }
 
-/* plus one checked, guest unchecked */
-.guest:has(input[name="guestsAttending"]:checked) + div:has(input[name="plusOnesAttending"]:checked) {
-  background-color: darkseagreen;
+/* Display the plus one if they've already rsvp'd*/
+.guest:has(input[name='guestsAttending']:disabled)
+  + div:has(input[name='plusOnesAttending']:disabled) {
+  visibility: visible;
 }
 
 /* plus one not checked, guest checked */
-.guest:has(input[name="guestsAttending"]:not(:checked)) + div:has(input[name="plusOnesAttending"]:checked) {
+.guest:has(input[name='guestsAttending']:checked)
+  + div:has(input[name='plusOnesAttending']:checked) {
+  background-color: darkseagreen;
+}
+
+/* plus one checked, guest unchecked */
+.guest:has(input[name='guestsAttending']:not(:checked))
+  + div:has(input[name='plusOnesAttending']:checked) {
   background-color: lightcoral;
 }
 
@@ -230,4 +261,8 @@ textarea {
   margin: 0 auto 3em;
   border-radius: 0.25em;
   cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: darkseagreen;
 }
