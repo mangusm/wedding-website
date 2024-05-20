@@ -1,4 +1,4 @@
-FROM golang:1.22.0 as builder
+FROM golang:1.22.3 as builder
 WORKDIR /app
 COPY go.mod go.sum main.go ./
 RUN CGO_ENABLED=0 go build -o ./wedding-website -a -ldflags '-extldflags "-static"' . 

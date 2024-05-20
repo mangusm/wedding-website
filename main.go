@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/pgtype"
@@ -42,32 +40,35 @@ type Guest struct {
 	HasRsvpd         pgtype.Bool `db:"has_rsvpd"`
 }
 
-type JsonLog struct {
-	ClientIp        string
-	Timestamp       string
-	Method          string
-	Path            string
-	RequestFormData map[string][]string
-	Proto           string
-	StatusCode      int
-	Latency         time.Duration
-	UserAgent       string
-	ErrorMessage    string
-}
-
 func main() {
-	// if this was started by air, then load .env, otherwise expect env vars to be set
-	if os.Getenv("ENVIRONMENT") == "air" {
-		err := godotenv.Load(".env")
+	isDev := os.Getenv("ENVIRONMENT") == "dev"
+
+	programLevel := new(slog.LevelVar) // Info by default
+	h := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel, AddSource: isDev})
+	slog.SetDefault(slog.New(h))
+
+	cfg, err := pgx.ParseConfig(fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB")))
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	// if we're developing then load our .env
+	if isDev {
+		programLevel.Set(slog.LevelDebug)
+		err = godotenv.Load(".env")
 		if err != nil {
-			panic(err)
+			slog.Error(err.Error())
+		}
+		cfg, err = pgx.ParseConfig(os.Getenv("DATABASE_URL"))
+		if err != nil {
+			slog.Error(err.Error())
 		}
 	}
 
 	ctx := context.Background()
-	log.Println("Connecting to database...")
-	conn, err := pgx.Connect(ctx, os.Getenv("DB_CONNECTION_STRING"))
+	conn, err := pgx.Connect(ctx, cfg.ConnString())
 	if err != nil {
+		slog.Error(err.Error())
 		panic(err)
 	}
 	defer conn.Close(context.Background())
@@ -80,35 +81,36 @@ func main() {
 	r.Static("/assets", "./static/assets")
 
 	// TODO:
-	r.StaticFile("/travel", "./static/templates/wip.html")
 	r.StaticFile("/registry", "./static/templates/wip.html")
 	r.LoadHTMLGlob("static/templates/*.html")
 
 	// JSON logging
-	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		errorMessage := strings.Replace(param.ErrorMessage, "\n", " ", -1)
-		logData := JsonLog{
-			ClientIp:        param.ClientIP,
-			Timestamp:       param.TimeStamp.Format(time.RFC1123),
-			Method:          param.Method,
-			Path:            param.Path,
-			RequestFormData: param.Request.PostForm,
-			Proto:           param.Request.Proto,
-			StatusCode:      param.StatusCode,
-			Latency:         param.Latency,
-			UserAgent:       param.Request.UserAgent(),
-			ErrorMessage:    errorMessage,
-		}
-		jsonData, _ := json.Marshal(logData)
-		if err != nil {
-			log.Println(fmt.Sprintf("Could not marshal json data: %s", err))
-			return fmt.Sprintf("%s|%s|%s|%s|%s|%d|%s|%s|%s\n", param.ClientIP, param.TimeStamp.Format(time.RFC1123), param.Method, param.Path, param.Request.Proto, param.StatusCode, param.Latency, param.Request.UserAgent(), errorMessage)
-		}
-		return string(jsonData) + "\n"
-	}))
+	r.Use(func(c *gin.Context) {
+		c.Next()
+		slog.Info("handle",
+			"method",
+			c.Request.Method,
+			"path",
+			c.Request.URL.Path,
+			"status_code",
+			c.Writer.Status(),
+			"client_ip",
+			c.ClientIP(),
+			"user_agent",
+			c.Request.UserAgent(),
+			"post_form",
+			c.Request.PostForm,
+			"errors",
+			c.Errors,
+		)
+	})
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
+
+	r.GET("/travel", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "travel.html", gin.H{})
 	})
 
 	r.GET("/rsvp", func(c *gin.Context) {
@@ -220,8 +222,8 @@ func main() {
 			})
 			return
 		}
-		c.HTML(http.StatusNotFound, "ErrorMessage", gin.H{"Message": "Sorry, we didn't send an inviation to anyone by that name."})
-		c.Error(errors.New(fmt.Sprintf("Could not find guest by last name")))
+		c.HTML(http.StatusNotFound, "ErrorMessage", gin.H{"Message": "Sorry, we didn't send an invitation to anyone by that name."})
+		c.Error(fmt.Errorf("could not find guest by last name"))
 	})
 
 	r.POST("/rsvp/submit", func(c *gin.Context) {
@@ -237,7 +239,7 @@ func main() {
 		for _, id := range formData.PlusOnesAttending {
 			if !slices.Contains(formData.GuestsAttending, id) {
 				c.HTML(http.StatusBadRequest, "ErrorMessage", gin.H{"Message": "We're sure your plus one is great and all, but they can't come without you."})
-				c.Error(errors.New("Plus one cannot attend by themselves"))
+				c.Error(errors.New("plus one cannot attend by themselves"))
 				return
 			}
 		}

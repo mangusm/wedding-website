@@ -1,6 +1,8 @@
-create database guests;
+-- migrate:up
+create user wedding;
+grant all privileges on database wedding to wedding;
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+create extension if not exists "uuid-ossp";
 
 create table guests(
     id uuid not null unique default uuid_generate_v4(),
@@ -14,3 +16,10 @@ create table guests(
     has_rsvpd bool not null default false,
     primary key ( first_name, last_name )
 )
+
+-- migrate:down
+drop table guests;
+drop extension "uuid-ossp";
+reassign owned BY wedding TO postgres;
+drop owned by wedding;
+drop user wedding;

@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 exclue_dir = ["tmp"]
 include_ext = ["go", "html", "css"]
 cmd = "go build -o ./tmp/main ."
-full_bin = "export ENVIRONMENT=air; ./tmp/main"
+full_bin = "export ENVIRONMENT=dev; ./tmp/main"
 
 [color]
   app = ""

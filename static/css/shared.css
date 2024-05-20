@@ -21,6 +21,14 @@ h3 {
   font-size: 4em;
 }
 
+hr{
+  height: 1px;
+  width: 90%;
+  margin-left: 0;
+  background-color: black;
+  border: none;
+}
+
 .full-screen {
   width: 100vw;
   height: 100vh;
@@ -50,6 +58,10 @@ h3 {
   background-image: url('/assets/bg.jpg');
 }
 
+#directions {
+  max-width: 100%;
+}
+
 .navbar {
   position: absolute;
   top: 0px;
@@ -59,6 +71,10 @@ h3 {
   display: grid;
   grid-template-columns: auto 1fr auto 1fr auto;
   height: 10vh;
+}
+
+#parking-map {
+  width: 50vh;
 }
 
 .navbar-item {
@@ -96,13 +112,22 @@ h3 {
   text-decoration-thickness: 3px;
 }
 
-.rsvp-title {
+.page-title {
   margin: 0px;
   position: sticky;
   top: 0px;
   height: 15vh;
   min-height: 1em;
   text-align: center;
+}
+
+.travel-header {
+  margin: 0.5em 0em 0em 0em;
+}
+
+.faq-response {
+  border-left: solid black 1px;
+  padding-left: 5px;
 }
 
 .rsvp-step {
