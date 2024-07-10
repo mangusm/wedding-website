@@ -12,6 +12,8 @@ create table guests(
     attending bool not null default false,
     plus_one_allowed bool not null default false,
     plus_one_attending bool not null constraint plus_one_without_guest check (not (plus_one_attending and not attending)) default false,
+    plus_one_names text,
+    song_requests text,
     notes text,
     has_rsvpd bool not null default false,
     primary key ( first_name, last_name )

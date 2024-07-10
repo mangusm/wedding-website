@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <head>
+  <link rel="icon" href="assets/favicon.ico" />
   <title>Mangus Wedding</title>
   <link rel="stylesheet" type="text/css" href="/css/shared.css" />
   <script src="/assets/htmx.min.js"></script>
@@ -17,7 +18,7 @@
         hx-target="#home-page"
         hx-swap="outerHTML"
       >
-        Travel
+        Information
       </div>
       <div></div>
       <div
@@ -30,16 +31,14 @@
         RSVP
       </div>
       <div></div>
-      <div
+      <a
+        style="text-decoration: none;"
         class="navbar-item last"
-        id="registry"
-        hx-get="/registry"
-        hx-push-url="true"
-        hx-target="#home-page"
-        hx-swap="outerHTML"
+        target="_blank"
+        href="https://registry.theknot.com/kiersten-edwards-michael-mangus-october-2024-ky/67020282"
       >
         Registry
-      </div>
+    </a>
     </div>
   </div>
 </body>

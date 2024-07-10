@@ -19,12 +19,13 @@
             placeholder="Smith"
             name="lastName"
             hx-post="/rsvp/findByLastName"
-            hx-trigger="input changed delay:500ms"
+            hx-trigger="click from:button"
             hx-target="#replaceme"
             hx-target-300="#next"
             hx-target-404=".error-message"
             hx-swap="outerHTML"
           />
+          <button class="submit-button">Search</button>
           {{template "ErrorMessage"}}
         </div>
       </div>

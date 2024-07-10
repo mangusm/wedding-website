@@ -14,57 +14,64 @@
     Please select who will be attending
   {{end}}
   </h2>
-  {{range $i, $guest := .Guests}}
-  <input type="hidden" name="guestIds" value="{{$guest.Id.String}}"/>
-  <div id="guest-{{$i}}" class="guest">
-    <input
-      class="rsvp-checkbox"
-      type="checkbox"
-      name="guestsAttending"
-      value="{{$guest.Id.String}}"
-      id="checkbox-{{$i}}"
-      {{if $guest.Attending.Bool}} checked {{end}}
-      {{if $guest.HasRsvpd.Bool}} disabled {{end}}
-    />
-    <label for="checkbox-{{$i}}" class="guest-name-container">
-      <div class="guest-name">{{ $guest.FirstName.String }}</div>
-      <div class="rsvp-status">{{if $guest.HasRsvpd.Bool}}
-          -
-          {{if $guest.PlusOneAttending.Bool}}
-          attending
-          {{else}}
-          not attending
-          {{end}}
-        {{end}}
-      </div>
-    </label>
-  </div>
-  {{if $guest.PlusOneAllowed.Bool}}
-  <div class="guest">
-    <input
-    class="rsvp-checkbox"
-    type="checkbox"
-    {{if $guest.PlusOneAttending.Bool}} checked {{end}}
-    {{if $guest.HasRsvpd.Bool}} disabled {{end}}
-    value="{{$guest.Id.String}}"
-    name="plusOnesAttending"
-    id="plus-one-{{$i}}"
-    />
-    <label for="plus-one-{{$i}}" class="guest-name-container">
-      <div class="guest-name">Plus one</div>
-      <div class="rsvp-status">{{if $guest.HasRsvpd.Bool}}
-          -
-          {{if $guest.PlusOneAttending.Bool}}
-          yes
-          {{else}}
-          no
-          {{end}}
-        {{end}}
-      </div>
-    </label>
-  </div>
-  {{end}}
-  {{end}}
+  <table>
+    {{range $i, $guest := .Guests}}
+      <tr>
+        <td>
+          <div id="guest-{{$i}}" class="guest">
+            <input type="hidden" name="guestIds" value="{{$guest.Id.String}}"/>
+              <input
+                class="rsvp-checkbox"
+                type="checkbox"
+                name="guestsAttending"
+                value="{{$guest.Id.String}}"
+                id="checkbox-{{$i}}"
+                {{if $guest.Attending.Bool}} checked {{end}}
+                {{if $guest.HasRsvpd.Bool}} disabled {{end}}
+              />
+              <label for="checkbox-{{$i}}" class="guest-name-container">
+                <div class="guest-name">{{ $guest.FirstName.String }}</div>
+              </label>
+            </div>
+          </div>
+        </td>
+        <td>
+          {{if $guest.PlusOneAllowed.Bool}}
+          <div class="guest">
+            <input
+            class="rsvp-checkbox"
+            type="checkbox"
+            {{if $guest.PlusOneAttending.Bool}} checked {{end}}
+            {{if $guest.HasRsvpd.Bool}} disabled {{end}}
+            value="{{$guest.Id.String}}"
+            name="plusOnesAttending"
+            id="plus-one-{{$i}}"
+            />
+            <label for="plus-one-{{$i}}" class="guest-name-container">
+              <div class="guest-name">Plus one</div>
+            </label>
+        </td>
+        </div>
+      </tr>
+      {{end}}
+    {{end}}
+  </table>
+  <h2 class="rsvp-prompt">
+    Please list the names of any plus ones attending below.
+  </h2>
+  <textarea
+    {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
+    name="plus_one_names"
+    placeholder="Becky"
+  >{{(index .Guests 0).Notes.String}}</textarea>
+  <h2 class="rsvp-prompt">
+    Any song requests?
+  </h2>
+  <textarea
+    {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
+    name="song_requests"
+    placeholder="The ABCs"
+  >{{(index .Guests 0).Notes.String}}</textarea>
   <h2 class="rsvp-prompt">
     Does anyone attending have any dietary restrictions or need special
     accomadations?

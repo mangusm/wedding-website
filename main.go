@@ -25,6 +25,8 @@ type RsvpSubmit struct {
 	GuestIds          []string `form:"guestIds"`
 	GuestsAttending   []string `form:"guestsAttending"`
 	PlusOnesAttending []string `form:"plusOnesAttending"`
+	PlusOneNames      string   `form:"plus_one_names"`
+	SongRequests      string   `form:"song_requests"`
 	Notes             string   `form:"notes"`
 }
 
@@ -36,6 +38,8 @@ type Guest struct {
 	Attending        pgtype.Bool `db:"attending"`
 	PlusOneAllowed   pgtype.Bool `db:"plus_one_allowed"`
 	PlusOneAttending pgtype.Bool `db:"plus_one_attending"`
+	PlusOneNames     pgtype.Text `db:"plus_one_names"`
+	SongRequests     pgtype.Text `db:"song_requests"`
 	Notes            pgtype.Text `db:"notes"`
 	HasRsvpd         pgtype.Bool `db:"has_rsvpd"`
 }
@@ -83,6 +87,8 @@ func main() {
 	// TODO:
 	r.StaticFile("/registry", "./static/templates/wip.html")
 	r.LoadHTMLGlob("static/templates/*.html")
+
+	r.Static("/favicon.ico", "./favicon.ico")
 
 	// JSON logging
 	r.Use(func(c *gin.Context) {
@@ -238,7 +244,7 @@ func main() {
 		// The plus one can't attend without the invited guest
 		for _, id := range formData.PlusOnesAttending {
 			if !slices.Contains(formData.GuestsAttending, id) {
-				c.HTML(http.StatusBadRequest, "ErrorMessage", gin.H{"Message": "We're sure your plus one is great and all, but they can't come without you."})
+				c.HTML(http.StatusBadRequest, "ErrorMessage", gin.H{"Message": "Please select yourself to attend before selecting a plus one."})
 				c.Error(errors.New("plus one cannot attend by themselves"))
 				return
 			}
@@ -254,14 +260,14 @@ func main() {
 		for _, guestId := range formData.GuestIds {
 			if slices.Contains(formData.GuestsAttending, guestId) {
 				plusOneIsAttending := slices.Contains(formData.PlusOnesAttending, guestId)
-				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = true, plus_one_attending = $1, notes = $2 where id = $3", plusOneIsAttending, formData.Notes, guestId)
+				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = true, plus_one_attending = $1, plus_one_names = $2, song_requests = $3, notes = $4 where id = $5", plusOneIsAttending, formData.PlusOneNames, formData.SongRequests, formData.Notes, guestId)
 				if err != nil {
 					c.HTML(http.StatusInternalServerError, "ErrorMessage", genericErrorH)
 					c.Error(err)
 					return
 				}
 			} else {
-				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = false, plus_one_attending = false, notes = $1 where id = $2", formData.Notes, guestId)
+				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = false, plus_one_attending = false, plus_one_names = $1, song_requests = $2, notes = $1 where id = $2", formData.PlusOneNames, formData.SongRequests, formData.Notes, guestId)
 				if err != nil {
 					c.HTML(http.StatusInternalServerError, "ErrorMessage", genericErrorH)
 					c.Error(err)
