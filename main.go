@@ -115,8 +115,8 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 
-	r.GET("/travel", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "travel.html", gin.H{})
+	r.GET("/information", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "information.html", gin.H{})
 	})
 
 	r.GET("/rsvp", func(c *gin.Context) {
@@ -161,8 +161,18 @@ func main() {
 			c.Error(err)
 			return
 		}
+
+		plusOnesAllowed := false
+		for _, guest := range guests {
+			if guest.PlusOneAllowed.Bool {
+				plusOnesAllowed = true
+				break
+			}
+		}
+
 		c.HTML(http.StatusOK, "submit.html", gin.H{
-			"Guests": guests,
+			"Guests":          guests,
+			"PlusOnesAllowed": plusOnesAllowed,
 		})
 	})
 

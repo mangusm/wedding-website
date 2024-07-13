@@ -87,6 +87,7 @@ hr {
   height: 100%;
   padding-left: 1em;
   padding-right: 1em;
+  text-decoration: none;
 }
 
 .navbar-item.first {
@@ -116,16 +117,14 @@ hr {
   margin: 0px;
   position: sticky;
   top: 0px;
-  height: 15vh;
-  min-height: 1em;
   text-align: center;
 }
 
-.travel-header {
+.information-header {
   margin: 0.5em 0em 0em 10px;
 }
 
-.travel-text {
+.information-text {
   margin-left: 10px;
   font-size: 1.5em;
 }

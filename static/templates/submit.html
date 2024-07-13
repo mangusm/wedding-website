@@ -56,24 +56,26 @@
       {{end}}
     {{end}}
   </table>
+  {{ if .PlusOnesAllowed }}
   <h2 class="rsvp-prompt">
-    Please list the names of any plus ones attending below.
+   What is the name of your plus one, if attending?
   </h2>
   <textarea
-    {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
-    name="plus_one_names"
-    placeholder="Becky"
-  >{{(index .Guests 0).Notes.String}}</textarea>
+  {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
+  name="plus_one_names"
+  placeholder="Becky"
+  >{{(index .Guests 0).PlusOneNames.String}}</textarea>
+  {{ end }}
   <h2 class="rsvp-prompt">
-    Any song requests?
+    Do you have any song requests?
   </h2>
   <textarea
     {{if (index .Guests 0).HasRsvpd.Bool}} disabled {{end}}
     name="song_requests"
     placeholder="The ABCs"
-  >{{(index .Guests 0).Notes.String}}</textarea>
+  >{{(index .Guests 0).SongRequests.String}}</textarea>
   <h2 class="rsvp-prompt">
-    Does anyone attending have any dietary restrictions or need special
+    Do you have any dietary restrictions or need special
     accomadations?
   </h2>
   <textarea
