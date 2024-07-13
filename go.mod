@@ -25,7 +25,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
