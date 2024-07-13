@@ -1,10 +1,12 @@
 name: wedding
 services:
   db:
-    image: postgres:latest
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
+    build:
+      context: .
+      dockerfile: db.dockerfile
     command: ["postgres", "-c", "log_statement=all"]

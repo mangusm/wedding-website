@@ -2,4 +2,5 @@
 tmp
 deploy.sh
 *.jpg
-assets/favicon.ico
+*.svg
+favicon.ico

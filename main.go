@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/pgtype"
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 type RsvpLastName struct {
@@ -51,22 +50,15 @@ func main() {
 	h := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel, AddSource: isDev})
 	slog.SetDefault(slog.New(h))
 
-	cfg, err := pgx.ParseConfig(fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB")))
+	cfg, err := pgx.ParseConfig(fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
+	))
 	if err != nil {
 		slog.Error(err.Error())
-	}
-
-	// if we're developing then load our .env
-	if isDev {
-		programLevel.Set(slog.LevelDebug)
-		err = godotenv.Load(".env")
-		if err != nil {
-			slog.Error(err.Error())
-		}
-		cfg, err = pgx.ParseConfig(os.Getenv("DATABASE_URL"))
-		if err != nil {
-			slog.Error(err.Error())
-		}
 	}
 
 	ctx := context.Background()
@@ -297,6 +289,11 @@ func main() {
 			"Guest":   len(formData.GuestsAttending) > 0,
 			"PlusOne": len(formData.PlusOnesAttending) > 0,
 		})
+	})
+
+	// trivial route to log the clicks of the github icon
+	r.GET("/github", func(c *gin.Context) {
+		c.Status(http.StatusOK)
 	})
 
 	r.Run(":" + os.Getenv("PORT"))

@@ -4,19 +4,21 @@
 
 ## Development Setup
 
-1. install [go](https://go.dev/doc/install), [dbmate](https://github.com/amacneil/dbmate/releases), and [air](https://github.com/cosmtrek/air/releases)
+1. install [go](https://go.dev/doc/install), [docker](https://docs.docker.com/engine/install/) and [air](https://github.com/cosmtrek/air/releases) (optional)
 
 1. Create a `.env` file:
 ```
 cat << EOF > .env
-DATABASE_URL=postgres://postgres:asdf@127.0.0.1:5432/wedding?sslmode=disable
-PORT=8080
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=wedding
+POSTGRES_USER=wedding_user
+POSTGRES_PASSWORD=
 ENVIRONMENT=dev
+PORT=8080
 EOF
 ```
 
 1. `docker compose up`
 
-1. `dbmate up`
-
-1. `air`
+1. `air` or `go run .`
