@@ -43,6 +43,17 @@ type Guest struct {
 	HasRsvpd         pgtype.Bool `db:"has_rsvpd"`
 }
 
+func plusOnesAllowed(guests []Guest) bool {
+	plusOnesAllowed := false
+	for _, guest := range guests {
+		if guest.PlusOneAllowed.Bool {
+			plusOnesAllowed = true
+			break
+		}
+	}
+	return plusOnesAllowed
+}
+
 func main() {
 	isDev := os.Getenv("ENVIRONMENT") == "dev"
 
@@ -154,17 +165,9 @@ func main() {
 			return
 		}
 
-		plusOnesAllowed := false
-		for _, guest := range guests {
-			if guest.PlusOneAllowed.Bool {
-				plusOnesAllowed = true
-				break
-			}
-		}
-
 		c.HTML(http.StatusOK, "submit.html", gin.H{
 			"Guests":          guests,
-			"PlusOnesAllowed": plusOnesAllowed,
+			"PlusOnesAllowed": plusOnesAllowed(guests),
 		})
 	})
 
@@ -226,7 +229,8 @@ func main() {
 				return
 			}
 			c.HTML(http.StatusOK, "submit.html", gin.H{
-				"Guests": guests,
+				"Guests":          guests,
+				"PlusOnesAllowed": plusOnesAllowed(guests),
 			})
 			return
 		}
@@ -250,6 +254,12 @@ func main() {
 				c.Error(errors.New("plus one cannot attend by themselves"))
 				return
 			}
+		}
+
+		if formData.PlusOnesAttending != nil && formData.PlusOneNames == "" {
+			c.HTML(http.StatusBadRequest, "ErrorMessage", gin.H{"Message": "Please provide the name of your plus one."})
+			c.Error(errors.New("plus one name not provided"))
+			return
 		}
 
 		tx, err := conn.Begin(ctx)
