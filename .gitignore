@@ -1,6 +1,5 @@
 .env
 tmp
-deploy.sh
 *.jpg
 *.svg
 favicon.ico
