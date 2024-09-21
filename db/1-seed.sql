@@ -1,5 +1,3 @@
-\connect wedding;
-
 insert into guests(invitation_id, first_name, last_name, plus_one_allowed)
 values
 ('a34a3135-71b4-47e6-95cf-cb62cc594b5c', 'Bob', 'Couple', false),

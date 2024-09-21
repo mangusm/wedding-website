@@ -1,9 +1,3 @@
-create database wedding;
-create user wedding_user;
-grant all privileges on database wedding to wedding_user;
-
-\connect wedding;
-
 create extension if not exists "uuid-ossp";
 
 create table if not exists guests(

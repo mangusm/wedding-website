@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/pgtype"
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 type RsvpLastName struct {
@@ -56,6 +58,13 @@ func plusOnesAllowed(guests []Guest) bool {
 
 func main() {
 	isDev := os.Getenv("ENVIRONMENT") == "dev"
+	if isDev {
+		err := godotenv.Overload()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+	fmt.Println(isDev, os.Getenv("POSTGRES_DB"))
 
 	programLevel := new(slog.LevelVar) // Info by default
 	h := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel, AddSource: isDev})
@@ -270,6 +279,7 @@ func main() {
 		}
 
 		for _, guestId := range formData.GuestIds {
+			fmt.Println(formData)
 			if slices.Contains(formData.GuestsAttending, guestId) {
 				plusOneIsAttending := slices.Contains(formData.PlusOnesAttending, guestId)
 				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = true, plus_one_attending = $1, plus_one_names = $2, song_requests = $3, notes = $4 where id = $5", plusOneIsAttending, formData.PlusOneNames, formData.SongRequests, formData.Notes, guestId)
@@ -279,8 +289,9 @@ func main() {
 					return
 				}
 			} else {
-				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = false, plus_one_attending = false, plus_one_names = $1, song_requests = $2, notes = $1 where id = $2", formData.PlusOneNames, formData.SongRequests, formData.Notes, guestId)
+				_, err := tx.Exec(ctx, "update guests set has_rsvpd = true, attending = false, plus_one_attending = false, plus_one_names = $1, song_requests = $2, notes = $3 where id = $4", formData.PlusOneNames, formData.SongRequests, formData.Notes, guestId)
 				if err != nil {
+					fmt.Println("here")
 					c.HTML(http.StatusInternalServerError, "ErrorMessage", genericErrorH)
 					c.Error(err)
 					return
